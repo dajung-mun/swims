@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🏊‍♂️ 수영 퀴즈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, #87CEEB 0%, #4FC3F7 50%, #29B6F6 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        #app-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .background-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .emoji-swim {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 200%;
+            font-size: 2rem;
+            animation: swim 40s linear infinite;
+            opacity: 0.4;
+            white-space: nowrap;
+            will-change: transform;
+        }
+        
+        @keyframes swim {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 200px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25' fill='%23ffffff'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5' fill='%23ffffff'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%23ffffff'/%3E%3C/svg%3E") repeat-x;
+            animation: wave 20s linear infinite;
+            opacity: 0.4;
+            will-change: transform;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        .coral {
+            position: fixed;
+            bottom: 0;
+            font-size: 4rem;
+            opacity: 0.3;
+            animation: sway 3s ease-in-out infinite;
+            will-change: transform;
+        }
+        
+        @keyframes sway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-in;
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #0093E9;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 147, 233, 0.2);
+        }
+
+        .progress {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .question {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            font-size: 1.4rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .option-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            text-align: center;
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-icon {
+            font-size: 8rem;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #10b981;
+        }
+
+        .failure {
+            color: #ef4444;
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.6rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 147, 233, 0.4);
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 147, 233, 0.6);
+        }
+
+        .restart-btn:active {
+            transform: translateY(0);
+        }
+
+        .start-container {
+            text-align: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .start-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 25px 70px;
+            font-size: 1.8rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.7);
+        }
+
+        .start-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Bubble animation */
+        .bubble {
+            position: fixed;
+            bottom: -100px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3));
+            border-radius: 50%;
+            animation: float 15s infinite ease-in;
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
+            will-change: transform, opacity;
+        }
+
+        @keyframes float {
+            0% {
+                bottom: -100px;
+                opacity: 0;
+                transform: translateX(0) scale(1);
+            }
+            10% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(20px) scale(1.1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                bottom: 110vh;
+                opacity: 0;
+                transform: translateX(-20px) scale(0.9);
+            }
+        }
+        
+        .fish {
+            position: fixed;
+            font-size: 3rem;
+            animation: fishSwim 25s linear infinite;
+            opacity: 0.6;
+            will-change: transform;
+        }
+        
+        @keyframes fishSwim {
+            0% {
+                left: -100px;
+                transform: scaleX(1);
+            }
+            48% {
+                transform: scaleX(1);
+            }
+            50% {
+                transform: scaleX(-1);
+            }
+            98% {
+                transform: scaleX(-1);
+            }
+            100% {
+                left: 110vw;
+                transform: scaleX(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .question {
+                font-size: 1.4rem;
+            }
+
+            .option-btn {
+                font-size: 1.2rem;
+                padding: 18px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="emoji-swim">🐠 🐟 🐡 🦈 🐙 🦑 🐚 ⭐ 🌊 🏊‍♂️ 🏊‍♀️ 🤿 🏄‍♂️</div>
+    <div class="wave"></div>
+    
+    <div class="bubble" style="left: 10%; width: 40px; height: 40px; animation-delay: 0s;"></div>
+    <div class="bubble" style="left: 30%; width: 60px; height: 60px; animation-delay: 2s;"></div>
+    <div class="bubble" style="left: 50%; width: 80px; height: 80px; animation-delay: 4s;"></div>
+    <div class="bubble" style="left: 70%; width: 50px; height: 50px; animation-delay: 6s;"></div>
+    <div class="bubble" style="left: 85%; width: 70px; height: 70px; animation-delay: 8s;"></div>
+    <div class="bubble" style="left: 20%; width: 45px; height: 45px; animation-delay: 1s;"></div>
+    <div class="bubble" style="left: 60%; width: 55px; height: 55px; animation-delay: 5s;"></div>
+    <div class="bubble" style="left: 90%; width: 35px; height: 35px; animation-delay: 7s;"></div>
+    
+    <div class="fish" style="top: 15%; animation-delay: 0s;">🐠</div>
+    <div class="fish" style="top: 35%; animation-delay: 5s;">🐟</div>
+    <div class="fish" style="top: 55%; animation-delay: 10s;">🐡</div>
+    <div class="fish" style="top: 25%; animation-delay: 15s;">🦈</div>
+    <div class="fish" style="top: 45%; animation-delay: 20s;">🐙</div>
+    
+    <div class="coral" style="left: 5%;">🌿</div>
+    <div class="coral" style="left: 15%; animation-delay: 0.5s;">🪸</div>
+    <div class="coral" style="left: 25%; animation-delay: 1s;">🌊</div>
+    <div class="coral" style="left: 75%; animation-delay: 1.5s;">🪸</div>
+    <div class="coral" style="left: 85%; animation-delay: 0.8s;">🌿</div>
+    <div class="coral" style="left: 95%; animation-delay: 1.2s;">🐚</div>
+
+    <div id="app-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>🏊‍♂️ 수영 퀴즈</h1>
+            </div>
+
+            <div id="app"></div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "자유형에서 호흡할 때 올바른 방법은?",
+                options: ["머리를 위로 들어 올린다", "옆으로 고개를 돌린다", "앞을 보면서 호흡한다", "물 위로 완전히 나온다"],
+                correct: 1
+            },
+            {
+                question: "올림픽 수영 경기장의 표준 풀 길이는?",
+                options: ["25m", "50m", "75m", "100m"],
+                correct: 1
+            },
+            {
+                question: "배영에서 출발할 때 선수는 어떤 자세를 취하는가?",
+                options: ["다이빙 자세", "물 속에서 벽을 잡고 있는 자세", "수면 위에 떠 있는 자세", "풀 밖에서 서 있는 자세"],
+                correct: 1
+            },
+            {
+                question: "평영의 킥 동작을 무엇이라고 부르는가?",
+                options: ["플러터 킥", "돌핀 킥", "웨지 킥", "시저스 킥"],
+                correct: 2
+            },
+            {
+                question: "접영에서 사용하는 킥의 이름은?",
+                options: ["플러터 킥", "돌핀 킥", "웨지 킥", "브레스트 킥"],
+                correct: 1
+            },
+            {
+                question: "수영에서 'IM'은 무엇을 의미하는가?",
+                options: ["Individual Medley (개인혼영)", "International Match", "Instant Motion", "Inner Movement"],
+                correct: 0
+            },
+            {
+                question: "개인혼영에서 영법의 순서는?",
+                options: ["자유형-배영-평영-접영", "접영-배영-평영-자유형", "배영-평영-접영-자유형", "평영-접영-배영-자유형"],
+                correct: 1
+            },
+            {
+                question: "수영 경기에서 부정출발은 몇 번까지 허용되는가?",
+                options: ["1번", "2번", "3번", "허용되지 않음"],
+                correct: 3
+            },
+            {
+                question: "자유형 경기에서 실제로 가장 많이 사용되는 영법은?",
+                options: ["배영", "평영", "접영", "크롤"],
+                correct: 3
+            },
+            {
+                question: "올림픽 수영 경기장의 레인 수는?",
+                options: ["6개", "8개", "10개", "12개"],
+                correct: 2
+            },
+            {
+                question: "수영 턴 동작 중 '플립 턴'을 주로 사용하는 영법은?",
+                options: ["평영", "배영과 자유형", "접영", "모든 영법"],
+                correct: 1
+            },
+            {
+                question: "수영에서 '스트림라인 자세'의 목적은?",
+                options: ["호흡을 쉽게 하기 위해", "수중 저항을 최소화하기 위해", "근육을 이완시키기 위해", "속도를 줄이기 위해"],
+                correct: 1
+            },
+            {
+                question: "평영에서 한 번의 스트로크 사이클 동안 킥은 몇 번 하는가?",
+                options: ["1번", "2번", "3번", "4번"],
+                correct: 0
+            },
+            {
+                question: "마이클 펠프스가 획득한 올림픽 금메달 개수는?",
+                options: ["18개", "23개", "28개", "15개"],
+                correct: 1
+            },
+            {
+                question: "수영 경기에서 터치패드의 역할은?",
+                options: ["수온 측정", "기록 측정", "파도 생성", "선수 안전"],
+                correct: 1
+            },
+            {
+                question: "접영에서 양팔은 어떻게 움직이는가?",
+                options: ["교대로", "동시에", "한쪽만", "무작위로"],
+                correct: 1
+            },
+            {
+                question: "수영 모자를 착용하는 주된 이유는?",
+                options: ["머리를 따뜻하게 하기 위해", "수중 저항을 줄이기 위해", "패션을 위해", "부력을 높이기 위해"],
+                correct: 1
+            },
+            {
+                question: "배영 경기에서 결승선에 가까워졌을 때 선수에게 알려주는 신호는?",
+                options: ["호루라기", "깃발", "불빛", "소리"],
+                correct: 1
+            },
+            {
+                question: "수영 경기에서 '히트(Heat)'란?",
+                options: ["수온", "예선 그룹", "결승전", "시상식"],
+                correct: 1
+            },
+            {
+                question: "평영에서 팔과 다리의 움직임 타이밍은?",
+                options: ["동시에", "팔 먼저, 다리 나중", "다리 먼저, 팔 나중", "무작위"],
+                correct: 1
+            },
+            {
+                question: "수영장에서 레인을 구분하는 로프의 명칭은?",
+                options: ["레인 디바이더", "풀 로프", "레인 로프", "스윔 라인"],
+                correct: 2
+            },
+            {
+                question: "자유형 50m 경기의 별명은?",
+                options: ["마라톤", "스프린트", "미들", "롱"],
+                correct: 1
+            },
+            {
+                question: "수영에서 DQ는 무엇을 의미하는가?",
+                options: ["Double Quick", "Disqualification (실격)", "Distance Quality", "Dive Quality"],
+                correct: 1
+            },
+            {
+                question: "자유형에서 한 팔이 물을 젓는 전체 동작을 무엇이라 하는가?",
+                options: ["킥", "스트로크", "글라이드", "풀"],
+                correct: 1
+            },
+            {
+                question: "평영 스타트 후 수중에서 한 번의 풀과 킥을 할 수 있는 것을 무엇이라 하는가?",
+                options: ["플립 턴", "풀아웃", "언더워터 킥", "원 풀 다운"],
+                correct: 1
+            },
+            {
+                question: "수영에서 '캐치(Catch)'란 무엇을 의미하는가?",
+                options: ["팔로 물을 잡는 동작", "호흡 동작", "킥 동작", "턴 동작"],
+                correct: 0
+            },
+            {
+                question: "배영에서 15m 이상 수중을 지나가면 어떻게 되는가?",
+                options: ["보너스 점수", "실격", "경고", "기록 무효"],
+                correct: 1
+            },
+            {
+                question: "혼계영(Medley Relay)에서 영법의 순서는?",
+                options: ["자유형-배영-평영-접영", "접영-배영-평영-자유형", "배영-평영-접영-자유형", "평영-접영-자유형-배영"],
+                correct: 2
+            },
+            {
+                question: "FINA는 무엇을 의미하는가?",
+                options: ["국제축구연맹", "국제수영연맹", "국제육상연맹", "국제올림픽위원회"],
+                correct: 1
+            },
+            {
+                question: "평영에서 터치할 때 양손은 어떻게 해야 하는가?",
+                options: ["한 손만 터치", "동시에 터치", "교대로 터치", "상관없음"],
+                correct: 1
+            },
+            {
+                question: "수영에서 'Negative Split'이란?",
+                options: ["전반부보다 후반부를 빠르게", "전반부를 빠르게", "일정한 속도 유지", "속도를 줄이는 것"],
+                correct: 0
+            },
+            {
+                question: "자유형 장거리 경기에서 가장 긴 거리는?",
+                options: ["800m", "1000m", "1500m", "2000m"],
+                correct: 2
+            },
+            {
+                question: "수영에서 '테이퍼링(Tapering)'이란?",
+                options: ["강도 높은 훈련", "시합 전 훈련량 줄이기", "수영 기술", "식단 조절"],
+                correct: 1
+            },
+            {
+                question: "접영과 평영에서 벽을 터치할 때 규칙은?",
+                options: ["한 손으로 터치", "양손 동시 터치", "발로 터치", "상관없음"],
+                correct: 1
+            },
+            {
+                question: "수영에서 '하이포크식 호흡(Hypoxic Training)'이란?",
+                options: ["빠른 호흡 훈련", "호흡 횟수를 줄이는 훈련", "수면 위 호흡", "호흡하지 않는 훈련"],
+                correct: 1
+            },
+            {
+                question: "자유형에서 팔의 입수 위치로 가장 적절한 곳은?",
+                options: ["어깨 바깥쪽", "머리 정중앙", "어깨와 머리 사이", "몸 옆"],
+                correct: 2
+            },
+            {
+                question: "수영에서 '드래그(Drag)'란 무엇인가?",
+                options: ["추진력", "수중 저항", "회전력", "부력"],
+                correct: 1
+            },
+            {
+                question: "평영에서 허용되는 최대 수중 거리는?",
+                options: ["10m", "15m", "20m", "제한 없음"],
+                correct: 1
+            },
+            {
+                question: "수영 경기에서 실격 판정을 내리는 사람은?",
+                options: ["코치", "심판", "타임키퍼", "관중"],
+                correct: 1
+            },
+            {
+                question: "단거리 수영 선수가 주로 발달시켜야 하는 근육 섬유는?",
+                options: ["지근 섬유", "속근 섬유", "심장 근육", "평활근"],
+                correct: 1
+            },
+            {
+                question: "다음 중 잘못된 수영 영법 표기는?",
+                options: ["자유영", "배영", "평영", "접영"],
+                correct: 0
+            },
+            {
+                question: "점수화한 지표로 Golf에서 타수가 적을수록 잘 치는 것을 착안해서 해당 구간의 수영시간과 스트로크 수를 더한 값을 무엇이라 하는가?",
+                options: ["스윔 스코어", "스윔 골프", "타임 스트로크", "퍼펙트 스윔"],
+                correct: 1
+            },
+            {
+                question: "2023년 개정된 규정에 따라 배영에서 도착을 할 때 잠영을 허용하고 있다. 이때 수영 국제규정에서 잠영 허용 거리는?",
+                options: ["5m", "10m", "15m", "무제한"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function selectRandomQuestions() {
+            const shuffled = shuffleArray(quizData);
+            return shuffled.slice(0, 5);
+        }
+
+        function startQuiz() {
+            currentQuestions = selectRandomQuestions();
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            const app = document.getElementById('app');
+            
+            app.innerHTML = `
+                <div class="progress">문제 ${currentQuestionIndex + 1} / 5</div>
+                <div class="question-container">
+                    <div class="question">${question.question}</div>
+                    <div class="options">
+                        ${question.options.map((option, index) => `
+                            <button class="option-btn" onclick="selectAnswer(${index})">
+                                ${option}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectAnswer(selectedIndex) {
+            const question = currentQuestions[currentQuestionIndex];
+            
+            if (selectedIndex === question.correct) {
+                correctAnswers++;
+                currentQuestionIndex++;
+                
+                if (currentQuestionIndex < 5) {
+                    setTimeout(() => showQuestion(), 300);
+                } else {
+                    setTimeout(() => showSuccess(), 300);
+                }
+            } else {
+                setTimeout(() => showFailure(question, selectedIndex), 300);
+            }
+        }
+
+        function showSuccess() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="result-container">
+                    <div class="result-icon">🏆</div>
+                    <div class="result-title success">성공!</div>
+                    <div class="result-message">
+                        5문제를 모두 맞추셨습니다!<br>
+                        수영 지식이 대단하시네요! 🎉
+                    </div>
+                    <button class="restart-btn" onclick="startQuiz()">
+                        다시 도전하기
+                    </button>
+                </div>
+            `;
+        }
+
+        function showFailure(question, selectedIndex) {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="result-container">
+                    <div class="result-icon">😢</div>
+                    <div class="result-title failure">실패!</div>
+                    <div class="result-message">
+                        ${correctAnswers}문제를 맞추셨습니다.<br><br>
+                        <strong>틀린 문제:</strong><br>
+                        ${question.question}<br><br>
+                        <span style="color: #ef4444;">❌ 당신의 답: ${question.options[selectedIndex]}</span><br>
+                        <span style="color: #10b981;">✅ 정답: ${question.options[question.correct]}</span><br><br>
+                        다시 도전해보세요!
+                    </div>
+                    <button class="restart-btn" onclick="startQuiz()">
+                        다시 도전하기
+                    </button>
+                </div>
+            `;
+        }
+
+        function showStartScreen() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="start-container">
+                    <div class="start-title">
+                        수영 지식을 테스트해보세요!<br>
+                        5문제를 연속으로 맞춰야 합니다.<br>
+                        한 문제라도 틀리면 처음부터!
+                    </div>
+                    <button class="start-btn" onclick="startQuiz()">
+                        시작하기
+                    </button>
+                </div>
+            `;
+        }
+
+        // Initialize
+        showStartScreen();
+    </script>
+</body>
+</html>
